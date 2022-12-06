@@ -130,6 +130,23 @@ app.post("/searchtask", (req, res) => {
   });
 });
 
+/* GET ACTIVE TASK COUNT */
+app.get("/activeTaskCount", (req, res) => {
+  pool.getConnection((err, connection) => {
+    if (err) throw err;
+
+    const sqlSelect = `SELECT task FROM tbl_todos WHERE status = "ACTIVE" ;`;
+    connection.query(sqlSelect, (err, rows) => {
+      connection.release();
+      if (!err) {
+        res.json({ activeTaskCount: rows.length });
+      } else {
+        res.json({ message: err });
+      }
+    });
+  });
+});
+
 /* GET TASK FROM ID */
 function getTaskFromId(task_id) {
   pool.getConnection((err, connection) => {
