@@ -147,6 +147,29 @@ app.get("/activeTaskCount", (req, res) => {
   });
 });
 
+/* DELETE TASK */
+app.post("/deleteTask", (req, res) => {
+  pool.getConnection((err, connection) => {
+    if (err) throw err;
+
+    const { taskId } = req.body;
+    console.log(req.body);
+    const sqlSelect = `DELETE FROM tbl_todos WHERE id = ${taskId};`;
+    connection.query(sqlSelect, (err, rows) => {
+      connection.release();
+      if (!err) {
+        if (rows.affectedRows == 1) {
+          res.json({ status: true, message: "Task deleted successfully !" });
+        } else {
+          res.json({ status: false, message: "Couldn't delete task !" });
+        }
+      } else {
+        res.json({ status: false, message: err });
+      }
+    });
+  });
+});
+
 /* GET TASK FROM ID */
 function getTaskFromId(task_id) {
   pool.getConnection((err, connection) => {
