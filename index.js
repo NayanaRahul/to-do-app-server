@@ -153,7 +153,7 @@ app.post("/deleteTask", (req, res) => {
     if (err) throw err;
 
     const { taskId } = req.body;
-    console.log(req.body);
+
     const sqlSelect = `DELETE FROM tbl_todos WHERE id = ${taskId};`;
     connection.query(sqlSelect, (err, rows) => {
       connection.release();
