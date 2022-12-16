@@ -170,6 +170,44 @@ app.post("/deleteTask", (req, res) => {
   });
 });
 
+/* UPDATE TASK */
+app.post("/updateTask", (req, res) => {
+  pool.getConnection((err, connection) => {
+    if (err) throw err;
+
+    const { task, taskId } = req.body;
+    const taskExist = getTaskFromText(task);
+    taskExist.then((result) => {
+      if (!result) {
+        const sqlSelect = `UPDATE tbl_todos SET task = ${task} WHERE id = ${taskId};`;
+        connection.query(sqlSelect, (err, rows) => {
+          connection.release();
+          if (!err) {
+            if (rows.affectedRows == 1) {
+              res.json({
+                status: "UPDATED",
+                message: "Task updated successfully !",
+              });
+            } else {
+              res.json({
+                status: "NOT_UPDATED",
+                message: "Couldn't update task !",
+              });
+            }
+          } else {
+            res.json({ status: "ERROR", message: err });
+          }
+        });
+      } else {
+        res.json({
+          status: "DUPLICATE_TASK",
+          message: "This task already exists!",
+        });
+      }
+    });
+  });
+});
+
 /* GET TASK FROM ID */
 function getTaskFromId(task_id) {
   pool.getConnection((err, connection) => {
