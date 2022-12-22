@@ -68,6 +68,7 @@ app.post("/addtask", (req, res) => {
           connection.release();
           if (!err) {
             if (rows.affectedRows > 0) {
+              console.log(rows);
               res.json({
                 status: true,
                 message: "Task added successfully !",
@@ -92,7 +93,7 @@ app.get("/gettasks", (req, res) => {
   pool.getConnection((err, connection) => {
     if (err) throw err; //not connected
 
-    const sqlSelect = "SELECT * FROM tbl_todos;";
+    const sqlSelect = "SELECT * FROM tbl_todos ORDER BY id DESC ;";
     connection.query(sqlSelect, (err, rows) => {
       connection.release();
       if (!err) {
@@ -179,7 +180,7 @@ app.post("/updateTask", (req, res) => {
     const taskExist = getTaskFromText(task);
     taskExist.then((result) => {
       if (!result) {
-        const sqlSelect = `UPDATE tbl_todos SET task = ${task} WHERE id = ${taskId};`;
+        const sqlSelect = `UPDATE tbl_todos SET task = "${task}" WHERE id = ${taskId};`;
         connection.query(sqlSelect, (err, rows) => {
           connection.release();
           if (!err) {
